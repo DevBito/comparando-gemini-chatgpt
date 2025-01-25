@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website KPI Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a2e;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: #162447;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .metric {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+
+    .chart {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+    }
+
+    .list {
+      list-style: none;
+    }
+
+    .list li {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .footer div {
+      text-align: center;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Website KPI Dashboard</h1>
+  </header>
+  
+  <main class="dashboard">
+    <!-- Linha 1 -->
+    <div class="card">
+      <h3>Conversões</h3>
+      <div class="metric">229</div>
+      <p>past 7 days</p>
+    </div>
+
+    <div class="card">
+      <h3>Taxa de Conversão</h3>
+      <div class="metric">0.9% <span style="color: #ff4d4d;">!</span></div>
+      <p>7 day average</p>
+    </div>
+
+    <div class="card">
+      <h3>Sessões</h3>
+      <div class="metric">26.9K</div>
+      <p>past 7 days</p>
+    </div>
+
+    <!-- Linha 2 -->
+    <div class="card">
+      <h3>Gráfico de Conversões</h3>
+      <div class="chart">[Gráfico de Linhas]</div>
+    </div>
+
+    <div class="card">
+      <h3>Gráfico de Taxa de Conversão</h3>
+      <div class="chart">[Gráfico de Linhas]</div>
+    </div>
+
+    <div class="card">
+      <h3>Gráfico de Sessões</h3>
+      <div class="chart">[Gráfico de Linhas]</div>
+    </div>
+
+    <!-- Linha 3 -->
+    <div class="card">
+      <h3>Conversões por Meio</h3>
+      <ul class="list">
+        <li><span>Organic</span> <span>120</span></li>
+        <li><span>CPC</span> <span>80</span></li>
+        <li><span>Direct</span> <span>29</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Taxa de Conversão por Meio</h3>
+      <ul class="list">
+        <li><span>Organic</span> <span>1.2%</span></li>
+        <li><span>CPC</span> <span>0.9%</span></li>
+        <li><span>Direct</span> <span>0.7%</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Sessões por Meio</h3>
+      <ul class="list">
+        <li><span>Organic</span> <span>15K</span></li>
+        <li><span>CPC</span> <span>8K</span></li>
+        <li><span>Direct</span> <span>3.9K</span></li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div>Powered by Geckoboard</div>
+    <div>18:15</div>
+  </footer>
+</body>
+</html>

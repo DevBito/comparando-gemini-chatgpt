@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de KPIs - Geckoboard Style</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #222242;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #ffffff;
+        }
+         .card h3 {
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+         .card-body ul {
+            list-style: none;
+            padding: 0;
+        }
+          .card-body ul li {
+            margin-bottom: 5px;
+            color: #ddd;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+         .chart-container {
+            margin-top: 15px;
+            position: relative;
+            height: 100px;
+        }
+         .chart-container canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 100px;
+        }
+
+        .alert {
+            color: #fdd835;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .speedometer {
+            text-align: center;
+        }
+        .speedometer-value {
+           font-size: 2.5rem;
+           color: #fdd835;
+           font-weight: bold;
+       }
+       .map-container {
+            width: 100%;
+            height: 300px;
+            background-color: #333;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #ddd;
+        }
+
+        footer {
+            background-color: #222242;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        footer span {
+            color: #ddd;
+            font-size: 0.9rem;
+        }
+
+        .clock {
+            color: #fff;
+            font-size: 1rem;
+        }
+        @media screen and (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Conversões</h2>
+            <div class="card-body">
+                <div class="kpi-value" id="conversions-total"></div>
+                <div class="chart-container">
+                    <canvas id="conversions-chart"></canvas>
+                </div>
+                 <h3>Por meio:</h3>
+                <ul id="conversions-by-source">
+                    
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Taxa de Conversão</h2>
+             <div class="card-body">
+                 <div class="kpi-value" id="conversion-rate"></div>
+                  <div class="alert" id="conversion-alert"></div>
+                   <div class="chart-container">
+                      <canvas id="conversion-rate-chart"></canvas>
+                   </div>
+                   <h3>Por meio:</h3>
+                 <ul id="conversion-rate-by-source">
+                    
+                 </ul>
+             </div>
+        </div>
+
+        <div class="card">
+            <h2>Sessões</h2>
+             <div class="card-body">
+                 <div class="kpi-value" id="sessions-total"></div>
+                 <div class="chart-container">
+                    <canvas id="sessions-chart"></canvas>
+                </div>
+                   <h3>Por meio:</h3>
+                  <ul id="sessions-by-source">
+                   
+                  </ul>
+            </div>
+        </div>
+        
+         <div class="card">
+            <h2>Stickiness</h2>
+             <div class="card-body">
+                 <div class="kpi-value">
+                    <span id="stickiness-percent"></span> e <span id="stickiness-sessions"></span>
+                </div>
+             </div>
+          </div>
+          <div class="card">
+              <h2>Engajamento</h2>
+                <div class="card-body">
+                    <p>Duração média da sessão: <span id="average-session-duration"></span> segundos</p>
+                    <p>Páginas por sessão: <span id="average-pages-per-session"></span></p>
+                </div>
+          </div>
+          <div class="card">
+             <h2>Bounce Rate</h2>
+               <div class="card-body">
+                   <div class="speedometer">
+                        <div class="speedometer-value" id="bounce-rate"></div>
+                   </div>
+               </div>
+          </div>
+        
+         <div class="card">
+             <h2>Localização dos usuários</h2>
+               <div class="map-container">
+                     Mapa em construção
+               </div>
+         </div>
+    </div>
+
+    <footer>
+        <span>Website KPI dashboard powered by Geckoboard</span>
+        <span class="clock" id="clock"></span>
+    </footer>
+
+    <script>
+         // Dados Mock para os gráficos (será substituído por API real)
+        const mockData = {
+            conversions: {
+                total: 1234,
+                daily: {
+                    currentPeriod: [250, 220, 150, 300, 280, 210, 230, 260, 270, 230, 240, 280, 290, 280, 250, 240, 230, 220, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300],
+                    previousPeriod: [200, 180, 130, 250, 230, 180, 200, 230, 250, 210, 220, 240, 260, 250, 220, 210, 200, 190, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270],
+                 },
+                bySource: {
+                    organic: 500,
+                    cpc: 450,
+                    referral: 284,
+                }
+            },
+             conversionRate: {
+                average: 2.5, // 2.5%
+                daily: {
+                    currentPeriod: [1.5, 1.8, 1.2, 2.0, 2.3, 1.9, 2.0, 2.1, 2.2, 2.1, 2.3, 2.5, 2.7, 2.6, 2.5, 2.4, 2.3, 2.2, 2.1, 2.0, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9],
+                    previousPeriod: [1.2, 1.4, 1.0, 1.8, 2.0, 1.7, 1.8, 1.9, 2.0, 1.8, 1.9, 2.1, 2.2, 2.1, 2.0, 1.9, 1.8, 1.7, 1.6, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
+                    },
+                    bySource: {
+                        organic: '3.0%',
+                        p_social: '1.8%',
+                        cpc: '2.2%'
+                    }
+               },
+                sessions: {
+                 total: 10452, // Total de sessões (em milhares)
+                 daily: {
+                    currentPeriod: [800, 750, 600, 900, 850, 700, 750, 800, 820, 780, 800, 850, 900, 880, 800, 780, 750, 700, 680, 700, 750, 800, 820, 850, 880, 900, 920, 950],
+                     previousPeriod: [700, 650, 550, 800, 750, 650, 700, 750, 780, 720, 740, 800, 850, 820, 780, 750, 700, 650, 620, 650, 700, 750, 780, 800, 820, 850, 880, 900]
+                 },
+                 bySource: {
+                       organic: 4000,
+                       cpc: 3000,
+                        referral: 3452
+                     }
+            },
+            stickiness: {
+                percent: 80.3,
+                sessionsPerUser: 1.14
+            },
+            engagement: {
+                averageSessionDuration: 230,
+                averagePagesPerSession: 2.5
+            },
+             bounceRate: 45.6
+         };
+           // Função para atualizar o relógio
+           function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+          }
+          updateClock();
+          setInterval(updateClock, 1000);
+
+        // 1. Conversões
+        document.getElementById('conversions-total').textContent = mockData.conversions.total;
+        const conversionsChartCanvas = document.getElementById('conversions-chart').getContext('2d');
+        new Chart(conversionsChartCanvas, {
+             type: 'line',
+            data: {
+                labels: Array.from({ length: mockData.conversions.daily.currentPeriod.length }, (_, i) => i + 1),
+                datasets: [{
+                     label: 'Últimos 28 dias',
+                     data: mockData.conversions.daily.currentPeriod,
+                     borderColor: '#fdd835',
+                     fill: false,
+                     tension: 0.4
+                },
+                {
+                     label: '28 dias anteriores',
+                    data: mockData.conversions.daily.previousPeriod,
+                     borderColor: '#9fa8da',
+                    fill: false,
+                    tension: 0.4
+                }
+            ]
+            },
+            options: {
+                 responsive: true,
+                maintainAspectRatio: false,
+                 plugins: {
+                    legend: {
+                     labels: {
+                            color: '#ddd'
+                          }
+                       }
+                     },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#ddd'
+                        }
+                     },
+                    y: {
+                        ticks: {
+                             color: '#ddd'
+                         }
+                    }
+              }
+            }
+        });
+         const conversionsBySourceList = document.getElementById('conversions-by-source');
+         for(const source in mockData.conversions.bySource) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${source}: ${mockData.conversions.bySource[source]}`;
+            conversionsBySourceList.appendChild(listItem);
+          }
+
+
+       // 2. Taxa de Conversão
+       document.getElementById('conversion-rate').textContent = mockData.conversionRate.average + '%';
+       if(mockData.conversionRate.average < 2) {
+         document.getElementById('conversion-alert').textContent = '! Taxa baixa';
+       }
+       const conversionRateChartCanvas = document.getElementById('conversion-rate-chart').getContext('2d');
+       new Chart(conversionRateChartCanvas, {
+            type: 'line',
+            data: {
+                labels:  Array.from({ length: mockData.conversionRate.daily.currentPeriod.length }, (_, i) => i + 1),
+                datasets: [{
+                    label: 'Últimos 28 dias',
+                    data: mockData.conversionRate.daily.currentPeriod,
+                    borderColor: '#fdd835',
+                    fill: false,
+                    tension: 0.4
+                 }, {
+                      label: '28 dias anteriores',
+                      data: mockData.conversionRate.daily.previousPeriod,
+                     borderColor: '#9fa8da',
+                     fill: false,
+                     tension: 0.4
+                 }]
+              },
+            options: {
+                 responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                     labels: {
+                            color: '#ddd'
+                         }
+                      }
+                 },
+               scales: {
+                    x: {
+                         ticks: {
+                            color: '#ddd'
+                        }
+                     },
+                    y: {
+                         ticks: {
+                             color: '#ddd'
+                        }
+                   }
+              }
+           }
+        });
+        const conversionRateBySourceList = document.getElementById('conversion-rate-by-source');
+         for(const source in mockData.conversionRate.bySource) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${source}: ${mockData.conversionRate.bySource[source]}`;
+             conversionRateBySourceList.appendChild(listItem);
+           }
+
+       // 3. Sessões
+       document.getElementById('sessions-total').textContent = (mockData.sessions.total / 1000).toFixed(1) + 'k';
+       const sessionsChartCanvas = document.getElementById('sessions-chart').getContext('2d');
+       new Chart(sessionsChartCanvas, {
+            type: 'line',
+            data: {
+                labels:  Array.from({ length: mockData.sessions.daily.currentPeriod.length }, (_, i) => i + 1),
+                datasets: [{
+                    label: 'Últimos 28 dias',
+                    data: mockData.sessions.daily.currentPeriod,
+                    borderColor: '#fdd835',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: '28 dias anteriores',
+                    data: mockData.sessions.daily.previousPeriod,
+                    borderColor: '#9fa8da',
+                   fill: false,
+                    tension: 0.4
+                 }]
+            },
+            options: {
+               responsive: true,
+                 maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                     labels: {
+                            color: '#ddd'
+                            }
+                        }
+                    },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#ddd'
+                        }
+                      },
+                    y: {
+                        ticks: {
+                           color: '#ddd'
+                        }
+                    }
+                }
+            }
+       });
+       const sessionsBySourceList = document.getElementById('sessions-by-source');
+         for(const source in mockData.sessions.bySource) {
+             const listItem = document.createElement('li');
+            listItem.textContent = `${source}: ${mockData.sessions.bySource[source]}`;
+            sessionsBySourceList.appendChild(listItem);
+          }
+
+       // 4. Stickiness
+        document.getElementById('stickiness-percent').textContent = mockData.stickiness.percent + '%';
+        document.getElementById('stickiness-sessions').textContent = mockData.stickiness.sessionsPerUser.toFixed(2);
+
+
+       // 5. Engajamento
+       document.getElementById('average-session-duration').textContent = mockData.engagement.averageSessionDuration;
+       document.getElementById('average-pages-per-session').textContent = mockData.engagement.averagePagesPerSession.toFixed(2);
+
+       // 6. Bounce Rate
+        document.getElementById('bounce-rate').textContent = mockData.bounceRate.toFixed(1) + '%';
+    </script>
+</body>
+</html>

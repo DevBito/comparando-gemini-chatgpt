@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website KPI Dashboard</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #1a202c;
+            color: #edf2f7;
+            margin: 0;
+            padding: 20px;
+        }
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .dashboard-item {
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-title {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            margin-bottom: 10px;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+         .metric-period {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+
+        .chart-container {
+            height: 200px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+         canvas {
+            max-width: 100%;
+            max-height: 100%;
+         }
+         .list-container {
+            text-align: left;
+         }
+         .list-item{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+         }
+         .additional-info {
+            display: flex;
+            justify-content: space-between;
+             max-width: 1200px;
+             margin: 20px auto;
+             
+        }
+
+        .additional-info-column {
+            background-color: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            width: 30%;
+        }
+        .additional-info-title {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+         .info-item{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+         }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /*responsivo */
+         @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr; /* Uma coluna em telas menores */
+            }
+            .additional-info{
+                flex-direction: column;
+            }
+            .additional-info-column{
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+        }
+    </style>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Conversões -->
+        <div class="dashboard-item">
+            <h2 class="metric-title">Conversões</h2>
+            <p class="metric-value">229</p>
+            <p class="metric-period">past 7 days</p>
+        </div>
+
+        <!-- Taxa de Conversão -->
+        <div class="dashboard-item">
+            <h2 class="metric-title">Taxa de Conversão</h2>
+            <p class="metric-value">0.9% <span style="color: red;">!</span></p>
+             <p class="metric-period">7 day average</p>
+        </div>
+
+        <!-- Sessões -->
+        <div class="dashboard-item">
+            <h2 class="metric-title">Sessões</h2>
+            <p class="metric-value">26.9K</p>
+             <p class="metric-period">past 7 days</p>
+        </div>
+
+        <!-- Gráfico de Conversões -->
+       <div class="dashboard-item">
+            <div class="chart-container">
+                <canvas id="conversionsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico de Taxa de Conversão -->
+          <div class="dashboard-item">
+           <div class="chart-container">
+                 <canvas id="conversionRateChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico de Sessões -->
+        <div class="dashboard-item">
+           <div class="chart-container">
+                <canvas id="sessionsChart"></canvas>
+            </div>
+        </div>
+       
+        <!-- Conversões por Meio -->
+        <div class="dashboard-item">
+            <h2 class="metric-title">by medium</h2>
+              <div class="list-container">
+                <div class="list-item"><span>Organic:</span><span> 100</span></div>
+                <div class="list-item"><span>CPC:</span><span> 80</span></div>
+                <div class="list-item"><span>Social:</span><span> 49</span></div>
+                </div>
+        </div>
+
+        <!-- Taxa de Conversão por Meio -->
+         <div class="dashboard-item">
+            <h2 class="metric-title">by medium</h2>
+                <div class="list-container">
+                    <div class="list-item"><span>Organic:</span><span> 1.2%</span></div>
+                    <div class="list-item"><span>CPC:</span><span> 0.8%</span></div>
+                    <div class="list-item"><span>Social:</span><span> 0.7%</span></div>
+                </div>
+        </div>
+
+        <!-- Sessões por Meio -->
+        <div class="dashboard-item">
+            <h2 class="metric-title">by medium</h2>
+               <div class="list-container">
+                <div class="list-item"><span>Organic:</span><span> 10K</span></div>
+                <div class="list-item"><span>CPC:</span><span> 8K</span></div>
+                <div class="list-item"><span>Social:</span><span> 4K</span></div>
+                </div>
+         </div>
+    </div>
+    <div class="additional-info">
+       <div class="additional-info-column">
+          <h3 class="additional-info-title">Stickiness - 7 day</h3>
+            <div class="info-item"><span>New users:</span> <span>80.3%</span></div>
+            <div class="info-item"><span>Sessions per user:</span> <span>1.14</span></div>
+       </div>
+        <div class="additional-info-column">
+             <h3 class="additional-info-title">Engagement - 7 day</h3>
+            <div class="info-item"><span>Avg session duration:</span> <span>59s</span></div>
+            <div class="info-item"><span>Pages per session:</span> <span>1.47</span></div>
+       </div>
+         <div class="additional-info-column">
+             <h3 class="additional-info-title">Bounce rate – 7 day</h3>
+            <div class="info-item"><span>Bounce Rate:</span> <span>82.5%</span></div>
+            <div style="text-align: center;  font-size: 1.2rem; padding-top: 10px;">
+                <p>Velocímetro</p>
+            </div>
+       </div>
+    </div>
+
+    <div class="footer">
+        <div>Website KPI dashboard</div>
+        <div>Powered by Geckoboard</div>
+        <div>18:15</div>
+    </div>
+    <script>
+        // Dados para os gráficos (simulados)
+        const chartData = {
+            labels: ['14 Nov', '21 Nov', '28 Nov', '5 Dec'],
+            datasets: [{
+                label: 'Past 28 Days',
+                data: [20, 35, 40, 55],
+                borderColor: '#63b3ed',
+                 backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0.4,
+            }, {
+                label: 'Prev 28 Days',
+                 data: [15, 25, 30, 45],
+                borderColor: '#a0aec0',
+                backgroundColor: 'transparent',
+                 borderWidth: 2,
+                 tension: 0.4,
+            }]
+        };
+         const chartData2 = {
+            labels: ['14 Nov', '21 Nov', '28 Nov', '5 Dec'],
+            datasets: [{
+                label: 'Past 28 Days',
+                data: [1, 1.2, 1.1, 1.3],
+                 borderColor: '#63b3ed',
+                  backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0.4,
+            }, {
+                label: 'Prev 28 Days',
+                 data: [0.8, 1.0, 0.9, 1.1],
+                borderColor: '#a0aec0',
+                 backgroundColor: 'transparent',
+                 borderWidth: 2,
+                 tension: 0.4,
+            }]
+        };
+        const chartData3 = {
+            labels: ['14 Nov', '21 Nov', '28 Nov', '5 Dec'],
+            datasets: [{
+                label: 'Past 28 Days',
+                data: [5000, 7000, 8000, 9000],
+                borderColor: '#63b3ed',
+                 backgroundColor: 'transparent',
+                 borderWidth: 2,
+                tension: 0.4,
+            }, {
+                label: 'Prev 28 Days',
+                 data: [4000, 6000, 7000, 8000],
+                 borderColor: '#a0aec0',
+                 backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0.4,
+            }]
+        };
+
+        // Configuração dos gráficos
+        const chartConfig = {
+             type: 'line',
+            data: chartData,
+             options: {
+                scales: {
+                     x: {
+                            ticks: {
+                                color: '#a0aec0'
+                            },
+                            grid: {
+                                color: '#4a5568'
+                            }
+                        },
+                     y: {
+                         ticks: {
+                                color: '#a0aec0'
+                            },
+                             grid: {
+                                color: '#4a5568'
+                            }
+                        }
+
+                },
+                plugins: {
+                  legend: {
+                    labels: {
+                      color: '#a0aec0',
+                    }
+                  }
+                },
+               responsive: true,
+                maintainAspectRatio: false,
+            }
+        };
+        const chartConfig2 = {
+             type: 'line',
+            data: chartData2,
+             options: {
+                scales: {
+                     x: {
+                            ticks: {
+                                color: '#a0aec0'
+                            },
+                            grid: {
+                                color: '#4a5568'
+                            }
+                        },
+                     y: {
+                         ticks: {
+                                color: '#a0aec0'
+                            },
+                             grid: {
+                                color: '#4a5568'
+                            }
+                        }
+
+                },
+                plugins: {
+                  legend: {
+                    labels: {
+                      color: '#a0aec0',
+                    }
+                  }
+                },
+               responsive: true,
+                maintainAspectRatio: false,
+            }
+        };
+         const chartConfig3 = {
+             type: 'line',
+            data: chartData3,
+             options: {
+                 scales: {
+                     x: {
+                            ticks: {
+                                color: '#a0aec0'
+                            },
+                            grid: {
+                                color: '#4a5568'
+                            }
+                        },
+                     y: {
+                         ticks: {
+                                color: '#a0aec0'
+                            },
+                             grid: {
+                                color: '#4a5568'
+                            }
+                        }
+
+                },
+                 plugins: {
+                  legend: {
+                    labels: {
+                      color: '#a0aec0',
+                    }
+                  }
+                },
+               responsive: true,
+                maintainAspectRatio: false,
+            }
+        };
+
+        // Inicializar os gráficos
+        const conversionsChart = new Chart(document.getElementById('conversionsChart'), chartConfig);
+       const conversionRateChart = new Chart(document.getElementById('conversionRateChart'), chartConfig2);
+        const sessionsChart = new Chart(document.getElementById('sessionsChart'), chartConfig3);
+    </script>
+</body>
+</html>
